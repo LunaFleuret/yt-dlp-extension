@@ -49,12 +49,13 @@ def cleanup_standalone_thumbnails(output_dir, final_filepath):
     # Look for any lingering .jpg, .webp, .part, .ytdl, or intermediate files
     for f in output_dir.iterdir():
         if f.is_file():
-            # Delete image files and temp extensions
-            if f.suffix.lower() in [".jpg", ".jpeg", ".png", ".webp", ".part", ".ytdl", ".temp"]:
+            # Delete image files, subtitle files, and temp extensions
+            if f.suffix.lower() in [".jpg", ".jpeg", ".png", ".webp", ".vtt", ".srt", ".ttml", ".part", ".ytdl", ".temp"]:
                 try:
                     f.unlink()
                 except Exception:
                     pass
+
 
 def main():
     if len(sys.argv) < 2:
@@ -145,10 +146,12 @@ def main():
         if embed_subtitles:
             cmd.extend([
                 "--write-subs",
+                "--write-auto-subs",
                 "--sub-langs", "ja,en,ja-orig,en-orig",
                 "--embed-subs",
                 "--no-abort-on-error"
             ])
+
 
     elif download_type == "custom" and custom_args:
         cmd.extend(custom_args.split())
