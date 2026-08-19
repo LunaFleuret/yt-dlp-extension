@@ -213,7 +213,7 @@ def clear_finished_tasks():
     return {"status": "success", "cleared_count": cleared}
 
 def open_output_dir(msg, config):
-    """Open the output download directory in OS file manager."""
+    """Open the output download directory in Files app (GitHub/MS Store) or OS file manager."""
     base_dir = get_base_dir()
     download_dir = msg.get("download_dir", config.get("download_dir", "../output")).strip()
     if not download_dir:
@@ -225,9 +225,33 @@ def open_output_dir(msg, config):
 
     target_path.mkdir(parents=True, exist_ok=True)
 
+    CREATE_NO_WINDOW = 0x08000000
+
     try:
         if sys.platform == "win32":
-            os.startfile(str(target_path))
+            opened = False
+            # 1. Priority: GitHub Release (files-stable.exe)
+            try:
+                subprocess.Popen(["files-stable.exe", str(target_path)], creationflags=CREATE_NO_WINDOW)
+                opened = True
+            except Exception:
+                pass
+
+            # 2. Priority: URI Protocol (files-uwp:)
+            if not opened:
+                try:
+                    subprocess.Popen(
+                        ["cmd.exe", "/c", "start", "", f"files-uwp:{target_path}"],
+                        creationflags=CREATE_NO_WINDOW
+                    )
+                    opened = True
+                except Exception:
+                    pass
+
+            # 3. Fallback: Windows Explorer
+            if not opened:
+                subprocess.Popen(["explorer.exe", str(target_path)], creationflags=CREATE_NO_WINDOW)
+
         elif sys.platform == "darwin":
             subprocess.Popen(["open", str(target_path)])
         else:
@@ -235,6 +259,8 @@ def open_output_dir(msg, config):
         return {"status": "success", "message": f"Opened {target_path}"}
     except Exception as e:
         return {"status": "error", "error": str(e)}
+
+
 
 def main():
 

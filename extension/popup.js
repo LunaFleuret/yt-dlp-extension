@@ -186,13 +186,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // Open output folder in explorer
+  // Open output folder in Files app / explorer
   const openFolderBtn = document.getElementById("openFolderBtn");
   if (openFolderBtn) {
     openFolderBtn.addEventListener("click", () => {
-      chrome.runtime.sendMessage({ action: "open_output_dir" });
+      const origText = openFolderBtn.textContent;
+      openFolderBtn.textContent = "開いています...";
+      chrome.runtime.sendMessage({ action: "open_output_dir" }, (response) => {
+        setTimeout(() => {
+          openFolderBtn.textContent = origText;
+        }, 1000);
+        if (response && response.status === "error") {
+          showStatus(response.error || "フォルダを開けませんでした。", "error");
+        }
+      });
     });
   }
+
 
   // Clear finished tasks
   clearFinishedBtn.addEventListener("click", () => {
