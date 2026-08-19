@@ -212,7 +212,32 @@ def clear_finished_tasks():
 
     return {"status": "success", "cleared_count": cleared}
 
+def open_output_dir(msg, config):
+    """Open the output download directory in OS file manager."""
+    base_dir = get_base_dir()
+    download_dir = msg.get("download_dir", config.get("download_dir", "../output")).strip()
+    if not download_dir:
+        download_dir = "../output"
+
+    target_path = pathlib.Path(download_dir)
+    if not target_path.is_absolute():
+        target_path = (base_dir / target_path).resolve()
+
+    target_path.mkdir(parents=True, exist_ok=True)
+
+    try:
+        if sys.platform == "win32":
+            os.startfile(str(target_path))
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", str(target_path)])
+        else:
+            subprocess.Popen(["xdg-open", str(target_path)])
+        return {"status": "success", "message": f"Opened {target_path}"}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
 def main():
+
     config = load_config()
     while True:
         try:
@@ -237,7 +262,11 @@ def main():
             elif action == "clear_finished":
                 result = clear_finished_tasks()
                 send_message(result)
+            elif action == "open_output_dir":
+                result = open_output_dir(msg, config)
+                send_message(result)
             elif action == "update_config":
+
                 new_conf = msg.get("config", {})
                 config.update(new_conf)
                 base_dir = get_base_dir()

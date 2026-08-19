@@ -138,8 +138,13 @@
     <div id="viewTasks" class="tab-view hidden">
       <div class="tasks-header">
         <span class="tasks-count" id="tasksCountLabel">0 件のタスク</span>
-        <button id="clearFinishedBtn" class="text-button">完了済みを削除</button>
+        <div class="tasks-actions">
+          <button id="openFolderBtn" class="text-button" title="エクスプローラーで出力フォルダを開く">出力フォルダへ移動</button>
+          <span class="action-divider">|</span>
+          <button id="clearFinishedBtn" class="text-button">完了済みを削除</button>
+        </div>
       </div>
+
 
       <div id="tasksList" class="tasks-list">
         <div class="empty-state" id="emptyTasksState">

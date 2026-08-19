@@ -364,10 +364,15 @@ body {
   padding: 0 2px;
 }
 
-.tasks-count {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
+.tasks-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-divider {
+  color: var(--border-color);
+  font-size: 10px;
 }
 
 .text-button {
@@ -379,11 +384,14 @@ body {
   cursor: pointer;
   padding: 2px 4px;
   border-radius: var(--radius-sm);
+  transition: opacity 0.2s;
 }
 
 .text-button:hover {
   text-decoration: underline;
+  opacity: 0.85;
 }
+
 
 .tasks-list {
   display: flex;

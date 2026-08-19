@@ -186,12 +186,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
+  // Open output folder in explorer
+  const openFolderBtn = document.getElementById("openFolderBtn");
+  if (openFolderBtn) {
+    openFolderBtn.addEventListener("click", () => {
+      chrome.runtime.sendMessage({ action: "open_output_dir" });
+    });
+  }
+
   // Clear finished tasks
   clearFinishedBtn.addEventListener("click", () => {
     chrome.runtime.sendMessage({ action: "clear_finished" }, () => {
       renderTasks();
     });
   });
+
 
   // Status label translation helper
   function getStatusLabel(status) {
