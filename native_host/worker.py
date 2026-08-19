@@ -116,7 +116,8 @@ def main():
         if embed_metadata:
             cmd.extend([
                 "--embed-metadata",
-                "--parse-metadata", "%(artist,creator,uploader,channel)s:%(artist)s"
+                "--parse-metadata", "%(artist,creator,uploader,channel)s:%(artist)s",
+                "--parse-metadata", "%(description)s:%(comment)s"
             ])
 
     elif download_type == "video":
@@ -137,8 +138,10 @@ def main():
         if embed_metadata:
             cmd.extend([
                 "--embed-metadata",
-                "--parse-metadata", "%(artist,creator,uploader,channel)s:%(artist)s"
+                "--parse-metadata", "%(artist,creator,uploader,channel)s:%(artist)s",
+                "--parse-metadata", "%(description)s:%(comment)s"
             ])
+
 
         if embed_thumbnail:
             cmd.extend(["--embed-thumbnail", "--convert-thumbnails", "jpg"])
