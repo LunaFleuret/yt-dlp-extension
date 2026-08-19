@@ -1,0 +1,10 @@
+{
+  "download_dir": "../output",
+  "show_console": false,
+  "default_type": "video",
+  "default_video_quality": "best",
+  "default_audio_format": "mp3",
+  "embed_thumbnail": true,
+  "embed_metadata": true,
+  "embed_subtitles": false
+}

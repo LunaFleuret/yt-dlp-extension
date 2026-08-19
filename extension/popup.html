@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>yt-dlp ダウンローダー</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-group">
+        <div class="logo-badge">yt-dlp</div>
+        <span class="app-title">メディアダウンローダー</span>
+      </div>
+      <div class="header-actions">
+        <button id="openOptionsBtn" class="icon-button" title="設定">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" id="tabNewBtn">ダウンロード</button>
+      <button class="tab-btn" id="tabTasksBtn">
+        タスク一覧
+        <span class="badge hidden" id="activeTasksBadge">0</span>
+      </button>
+    </div>
+
+    <!-- View: New Download Tab -->
+    <div id="viewNew" class="tab-view active">
+      <!-- Media Info Card -->
+      <div class="card page-card">
+        <div class="page-title" id="pageTitle">タイトルを取得中...</div>
+        <div class="input-group">
+          <label for="pageUrl" class="input-label">対象 URL</label>
+          <input type="text" id="pageUrl" class="text-input" placeholder="https://..." spellcheck="false" />
+        </div>
+      </div>
+
+      <!-- Type Segment Selector -->
+      <div class="type-segment">
+        <label class="segment-btn active" id="segVideo">
+          <input type="radio" name="downloadType" value="video" checked />
+          <span>動画 (Video)</span>
+        </label>
+        <label class="segment-btn" id="segAudio">
+          <input type="radio" name="downloadType" value="audio" />
+          <span>音声 (Audio)</span>
+        </label>
+        <label class="segment-btn" id="segCustom">
+          <input type="radio" name="downloadType" value="custom" />
+          <span>カスタム</span>
+        </label>
+      </div>
+
+      <!-- Video Options Card -->
+      <div class="card form-card" id="panelVideo">
+        <div class="form-row">
+          <div class="form-col">
+            <label class="input-label" for="videoQuality">画質</label>
+            <select id="videoQuality" class="select-input">
+              <option value="best">最高画質 (Best)</option>
+              <option value="1080">1080p (Full HD)</option>
+              <option value="720">720p (HD)</option>
+              <option value="480">480p (軽量)</option>
+            </select>
+          </div>
+          <div class="form-col">
+            <label class="input-label" for="videoFormat">形式</label>
+            <select id="videoFormat" class="select-input">
+              <option value="mp4">MP4 (標準)</option>
+              <option value="mkv">MKV (高機能)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="toggles-row">
+          <label class="toggle-item">
+            <input type="checkbox" id="videoThumbnail" checked />
+            <span class="toggle-label">サムネイルを埋め込む</span>
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="videoSubtitles" />
+            <span class="toggle-label">字幕を埋め込む</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Audio Options Card -->
+      <div class="card form-card hidden" id="panelAudio">
+        <div class="form-col">
+          <label class="input-label" for="audioFormat">音声形式</label>
+          <select id="audioFormat" class="select-input">
+            <option value="mp3">MP3 (320kbps 最高品質)</option>
+            <option value="flac">FLAC (ロスレス音質)</option>
+            <option value="m4a">M4A / AAC (Apple標準)</option>
+            <option value="opus">Opus (高圧縮・高音質)</option>
+            <option value="wav">WAV (非圧縮)</option>
+          </select>
+        </div>
+
+        <div class="toggles-row">
+          <label class="toggle-item">
+            <input type="checkbox" id="audioThumbnail" checked />
+            <span class="toggle-label">ジャケット画像・アーティスト名を埋め込む</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Custom Options Card -->
+      <div class="card form-card hidden" id="panelCustom">
+        <div class="form-col">
+          <label class="input-label" for="customArgs">yt-dlp コマンド引数</label>
+          <input type="text" id="customArgs" class="text-input" placeholder="例: -f 137+140 --write-thumbnail" />
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <button id="downloadBtn" class="primary-button">
+        <span class="btn-text">ダウンロード開始</span>
+        <div class="spinner hidden" id="btnSpinner"></div>
+      </button>
+
+      <!-- Status banner -->
+      <div id="statusBanner" class="status-banner hidden">
+        <div class="status-text" id="statusText"></div>
+      </div>
+    </div>
+
+    <!-- View: Progress / Tasks Tab -->
+    <div id="viewTasks" class="tab-view hidden">
+      <div class="tasks-header">
+        <span class="tasks-count" id="tasksCountLabel">0 件のタスク</span>
+        <button id="clearFinishedBtn" class="text-button">完了済みを削除</button>
+      </div>
+
+      <div id="tasksList" class="tasks-list">
+        <div class="empty-state" id="emptyTasksState">
+          <div class="empty-icon">&#128229;</div>
+          <div class="empty-title">進行中のタスクはありません</div>
+          <div class="empty-sub">「ダウンロード」タブから実行してください。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

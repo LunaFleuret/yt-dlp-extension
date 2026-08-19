@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "yt-dlp Quick Downloader",
+  "version": "1.0.0",
+  "description": "Download videos and audio using your local yt-dlp / batch file directly from your browser.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2N3kkdwgKZkOACCrLgZAMXR9gu7P4zhCmmx+y/zhxVXGLbpdVjGJTtBBakM1UmiWDSzbJpW79/fCwxFBCOzsAxmmPWCLMstiLGdv2/nQWGiPGLSO4GXWfFOvAGU4l1mv2E2A4NiNGpyy7mWrqopwL3XoeD1P3c0yWmotok83OoxvTyyogEK+tCpjL+YOPuje5pw0KMawgAv5WEIRx5mBT8o6jhfmSXqhp/fBvi7RJ4T/UZHPOrSHv2fXfJtSzkAyyde32gJKwmBxqixutX3nFPA9a/SK1Oq3SAXnneBxvhnGVXLw1MeqaoXNkj0uZxai/pUeywdGAcRrElSessWeEwIDAQAB",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "nativeMessaging",
+    "storage",
+    "notifications",
+    "alarms"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "yt-dlp Quick Downloader",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

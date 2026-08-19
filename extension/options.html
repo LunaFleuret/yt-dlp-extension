@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>yt-dlp ダウンローダー設定</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="options-container">
+    <header class="header">
+      <div class="logo-group">
+        <div class="logo-badge">yt-dlp</div>
+        <h1>ダウンロード設定</h1>
+      </div>
+      <span class="version-tag">v2.0.0</span>
+    </header>
+
+    <main class="main-content">
+      <!-- Section: Defaults -->
+      <section class="settings-card">
+        <h2 class="card-title">デフォルトの保存形式</h2>
+
+        <div class="form-group">
+          <label for="defaultType" class="form-label">デフォルトモード</label>
+          <select id="defaultType" class="form-select">
+            <option value="video">動画 (Video)</option>
+            <option value="audio">音声 (Audio)</option>
+            <option value="custom">カスタム (Custom)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="defaultVideoQuality" class="form-label">デフォルト動画画質</label>
+          <select id="defaultVideoQuality" class="form-select">
+            <option value="best">最高画質 (Best Available)</option>
+            <option value="1080">1080p (Full HD)</option>
+            <option value="720">720p (HD)</option>
+            <option value="480">480p (軽量)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="defaultAudioFormat" class="form-label">デフォルト音声形式</label>
+          <select id="defaultAudioFormat" class="form-select">
+            <option value="mp3">MP3 (320kbps 最高品質)</option>
+            <option value="flac">FLAC (ロスレス音質)</option>
+            <option value="m4a">M4A / AAC (Apple標準)</option>
+            <option value="opus">Opus (高圧縮・高音質)</option>
+            <option value="wav">WAV (非圧縮)</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Section: Destination & Tags -->
+      <section class="settings-card">
+        <h2 class="card-title">保存先・タグ埋め込み設定</h2>
+
+        <div class="form-group">
+          <label for="downloadDir" class="form-label">保存先フォルダ（任意）</label>
+          <input type="text" id="downloadDir" class="form-input" placeholder="例: D:\Videos （空欄の場合はデフォルトフォルダ）" />
+          <p class="form-help">空欄の場合は拡張機能のホストフォルダ配下に保存されます。</p>
+        </div>
+
+        <div class="form-group-checkbox">
+          <label class="checkbox-label">
+            <input type="checkbox" id="embedThumbnail" checked />
+            <span class="checkbox-text">サムネイル / アルバムジャケット画像をファイル内に自動埋め込み</span>
+          </label>
+        </div>
+
+        <div class="form-group-checkbox">
+          <label class="checkbox-label">
+            <input type="checkbox" id="embedMetadata" checked />
+            <span class="checkbox-text">タイトル、アーティスト名、チャプター情報を自動埋め込み</span>
+          </label>
+        </div>
+
+        <div class="form-group-checkbox">
+          <label class="checkbox-label">
+            <input type="checkbox" id="embedSubtitles" />
+            <span class="checkbox-text">動画ダウンロード時に字幕（日本語・英語等）を自動埋め込み</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Section: Connection Test -->
+      <section class="settings-card">
+        <h2 class="card-title">ホスト接続テスト</h2>
+        <div class="connection-box">
+          <button id="testConnBtn" class="secondary-button">接続テストを実行 (Ping)</button>
+          <div id="connResult" class="conn-result">未テスト</div>
+        </div>
+      </section>
+
+      <!-- Action Footer -->
+      <div class="action-footer">
+        <button id="saveBtn" class="primary-button">設定を保存</button>
+        <span id="saveStatus" class="save-status"></span>
+      </div>
+    </main>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
