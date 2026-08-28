@@ -1,6 +1,11 @@
 {
-  "download_dir": "../output",
+  "bat_path": "../yt-dlp/yt-dlp.bat",
+  "use_bat": true,
+  "download_dir": "",
   "show_console": false,
+  "keep_console_open": false,
+  "cookies_from_browser": "auto",
+  "cookies_file": "\"E:\\Coding\\yt-dlp-extension\\www.youtube.com_cookies.txt\"",
   "default_type": "video",
   "default_video_quality": "best",
   "default_audio_format": "mp3",

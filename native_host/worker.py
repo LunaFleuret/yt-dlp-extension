@@ -91,14 +91,26 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     working_dir = str(output_dir)
 
+    cookies_from_browser = task_data.get("cookies_from_browser", "").strip()
+    cookies_file = task_data.get("cookies_file", "").strip()
+
     # Base yt-dlp command configured to merge everything into a single file
     cmd = [
         "yt-dlp",
         "--newline",
         "--windows-filenames",
         "--no-mtime",
+        "--remote-components", "ejs:github",
         "-P", working_dir
     ]
+
+    if cookies_from_browser:
+        cmd.extend(["--cookies-from-browser", cookies_from_browser])
+    elif cookies_file:
+        cookie_path = pathlib.Path(cookies_file)
+        if not cookie_path.is_absolute():
+            cookie_path = (base_dir / cookie_path).resolve()
+        cmd.extend(["--cookies", str(cookie_path)])
 
     if download_type == "audio":
         # Extract audio and merge tags/cover into a single audio file
@@ -150,11 +162,12 @@ def main():
             cmd.extend([
                 "--write-subs",
                 "--write-auto-subs",
-                "--sub-langs", "ja,en,ja-orig,en-orig",
+                "--sub-langs", "ja.*,en.*",
                 "--embed-subs",
-                "--no-abort-on-error"
+                "--compat-options", "no-keep-subs",
+                "--sleep-subtitles", "2",
+                "-i"
             ])
-
 
     elif download_type == "custom" and custom_args:
         cmd.extend(custom_args.split())
@@ -197,13 +210,14 @@ def main():
             if not clean_line:
                 continue
 
-            # Detect destination filename
+            # Detect destination filename (ignore subtitle and temp files)
             dest_match = DESTINATION_REGEX.search(clean_line)
             if dest_match:
                 detected_dest = dest_match.group(1).strip()
-                final_detected_filepath = detected_dest
                 filename = os.path.basename(detected_dest)
-                if not filename.endswith(".part"):
+                ignored_exts = [".vtt", ".srt", ".ttml", ".part", ".ytdl", ".temp", ".jpg", ".jpeg", ".png", ".webp"]
+                if not any(filename.lower().endswith(ext) for ext in ignored_exts):
+                    final_detected_filepath = detected_dest
                     task_data["title"] = filename
 
             # Converting / Merging stages
@@ -243,8 +257,22 @@ def main():
 
         proc.wait()
 
+        # Check if actual media file was created
+        media_file_exists = False
+        if final_detected_filepath and os.path.exists(final_detected_filepath):
+            media_file_exists = True
+        elif output_dir.exists():
+            for f in output_dir.iterdir():
+                if f.is_file() and f.suffix.lower() in [".mp4", ".mkv", ".webm", ".mp3", ".flac", ".m4a", ".opus", ".wav"]:
+                    if f.stat().st_mtime >= task_data["started_at"]:
+                        media_file_exists = True
+                        final_detected_filepath = str(f)
+                        break
+
         task_data["finished_at"] = time.time()
-        if proc.returncode == 0:
+        # If exit code is 0 or media exists despite non-fatal subtitle error
+        is_subtitle_only_error = fatal_error and ("subtitles" in fatal_error.lower() or "429" in fatal_error)
+        if proc.returncode == 0 or (media_file_exists and is_subtitle_only_error):
             task_data["status"] = "completed"
             task_data["percent"] = 100.0
             task_data["speed"] = "完了"
@@ -252,8 +280,7 @@ def main():
             task_data["error"] = None
 
             # Clean up standalone temp/thumbnail files so only the single file remains
-            if final_detected_filepath:
-                cleanup_standalone_thumbnails(output_dir, final_detected_filepath)
+            cleanup_standalone_thumbnails(output_dir, final_detected_filepath)
         else:
             if task_data.get("status") != "cancelled":
                 task_data["status"] = "error"

@@ -157,32 +157,35 @@ document.addEventListener("DOMContentLoaded", async () => {
       savedAudioThumbnail: audioThumbnailCheckbox.checked
     });
 
-    setLoading(true);
-    hideStatus();
+    // Fetch saved cookie & folder settings
+    chrome.storage.sync.get(["savedCookiesFromBrowser", "savedCookiesFile", "savedDownloadDir"], (settings) => {
+      const payload = {
+        action: "download",
+        url: url,
+        title: currentTabTitle || url,
+        download_type: selectedType,
+        video_quality: videoQuality,
+        video_format: videoFormat,
+        audio_format: audioFormat,
+        embed_thumbnail: embedThumbnail,
+        embed_metadata: true,
+        embed_subtitles: embedSubtitles,
+        custom_args: customArgs,
+        cookies_from_browser: settings.savedCookiesFromBrowser || "auto",
+        cookies_file: settings.savedCookiesFile || "",
+        download_dir: settings.savedDownloadDir || ""
+      };
 
-    const payload = {
-      action: "download",
-      url: url,
-      title: currentTabTitle || url,
-      download_type: selectedType,
-      video_quality: videoQuality,
-      video_format: videoFormat,
-      audio_format: audioFormat,
-      embed_thumbnail: embedThumbnail,
-      embed_metadata: true,
-      embed_subtitles: embedSubtitles,
-      custom_args: customArgs
-    };
-
-    chrome.runtime.sendMessage(payload, (response) => {
-      setLoading(false);
-      if (response && response.status === "success") {
-        switchTab("tasks");
-        renderTasks();
-      } else {
-        const errMsg = (response && response.error) ? response.error : "ネイティブホストとの通信に失敗しました。";
-        showStatus(errMsg, "error");
-      }
+      chrome.runtime.sendMessage(payload, (response) => {
+        setLoading(false);
+        if (response && response.status === "success") {
+          switchTab("tasks");
+          renderTasks();
+        } else {
+          const errMsg = (response && response.error) ? response.error : "ネイティブホストとの通信に失敗しました。";
+          showStatus(errMsg, "error");
+        }
+      });
     });
   });
 
@@ -278,6 +281,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (task.status === "completed") progressClass += " completed";
         if (task.status === "error") progressClass += " error";
 
+        let errorHtml = "";
+        if (task.error) {
+          const isAgeOrCookieError = /confirm your age|cookies-from-browser|--cookies|Sign in/i.test(task.error);
+          errorHtml = `
+            <div class="task-error-msg">
+              ${escapeHtml(task.error)}
+              ${isAgeOrCookieError ? `<div class="task-error-hint">※年齢確認またはログインが必要です。右上の設定アイコンから「ブラウザのCookie連携」を有効にしてください。</div>` : ""}
+            </div>
+          `;
+        }
+
         card.innerHTML = `
           <div class="task-card-header">
             <div class="task-title" title="${escapeHtml(task.title || task.url)}">
@@ -300,7 +314,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             ${isRunning ? `<button class="task-cancel-btn" data-action="cancel" data-id="${task.id}">キャンセル</button>` : ""}
           </div>
 
-          ${task.error ? `<div class="task-error-msg">${escapeHtml(task.error)}</div>` : ""}
+          ${errorHtml}
         `;
 
         const cancelBtn = card.querySelector('[data-action="cancel"]');

@@ -46,7 +46,9 @@ def load_config():
         "use_bat": True,
         "download_dir": "../output",
         "show_console": False,
-        "keep_console_open": False
+        "keep_console_open": False,
+        "cookies_from_browser": "",
+        "cookies_file": ""
     }
     if config_file.exists():
         try:
@@ -84,9 +86,23 @@ def start_download(msg, config):
     custom_args = msg.get("custom_args", "").strip()
     show_console = msg.get("show_console", config.get("show_console", False))
     download_dir = msg.get("download_dir", config.get("download_dir", "")).strip()
+    cookies_from_browser = msg.get("cookies_from_browser", config.get("cookies_from_browser", "")).strip()
+    cookies_file = msg.get("cookies_file", config.get("cookies_file", "")).strip()
+    cookies_data = msg.get("cookies_data", "").strip()
 
     tasks_dir = get_tasks_dir()
     task_file = tasks_dir / f"task_{task_id}.json"
+
+    # Save direct cookies data if provided
+    if cookies_data:
+        task_cookies_file = tasks_dir / f"task_{task_id}_cookies.txt"
+        try:
+            with open(task_cookies_file, "w", encoding="utf-8") as cf:
+                cf.write(cookies_data)
+            cookies_file = str(task_cookies_file)
+            cookies_from_browser = ""
+        except Exception:
+            pass
 
     task_info = {
         "id": task_id,
@@ -101,6 +117,8 @@ def start_download(msg, config):
         "embed_subtitles": embed_subtitles,
         "custom_args": custom_args,
         "download_dir": download_dir,
+        "cookies_from_browser": cookies_from_browser,
+        "cookies_file": cookies_file,
         "show_console": show_console,
         "status": "queued",
         "percent": 0.0,
@@ -205,6 +223,10 @@ def clear_finished_tasks():
             with open(tf, "r", encoding="utf-8") as f:
                 task_data = json.load(f)
             if task_data.get("status") in ["completed", "error", "cancelled"]:
+                tid = task_data.get("id")
+                if tid:
+                    cookie_f = tasks_dir / f"task_{tid}_cookies.txt"
+                    cookie_f.unlink(missing_ok=True)
                 tf.unlink(missing_ok=True)
                 cleared += 1
         except Exception:
@@ -230,25 +252,35 @@ def open_output_dir(msg, config):
     try:
         if sys.platform == "win32":
             opened = False
-            # 1. Priority: GitHub Release (files-stable.exe)
+            # 1. Priority: GitHub Release Preview (files-preview.exe)
             try:
-                subprocess.Popen(["files-stable.exe", str(target_path)], creationflags=CREATE_NO_WINDOW)
+                subprocess.Popen(["files-preview.exe", str(target_path)], creationflags=CREATE_NO_WINDOW)
                 opened = True
             except Exception:
                 pass
 
-            # 2. Priority: URI Protocol (files-uwp:)
+            # 2. Priority: GitHub Release Stable (files-stable.exe)
             if not opened:
                 try:
-                    subprocess.Popen(
-                        ["cmd.exe", "/c", "start", "", f"files-uwp:{target_path}"],
-                        creationflags=CREATE_NO_WINDOW
-                    )
+                    subprocess.Popen(["files-stable.exe", str(target_path)], creationflags=CREATE_NO_WINDOW)
                     opened = True
                 except Exception:
                     pass
 
-            # 3. Fallback: Windows Explorer
+            # 3. Priority: URI Protocol (files-preview-uwp: / files-uwp:)
+            if not opened:
+                for uri_scheme in ["files-preview-uwp:", "files-uwp:"]:
+                    try:
+                        subprocess.Popen(
+                            ["cmd.exe", "/c", "start", "", f"{uri_scheme}{target_path}"],
+                            creationflags=CREATE_NO_WINDOW
+                        )
+                        opened = True
+                        break
+                    except Exception:
+                        pass
+
+            # 4. Fallback: Windows Explorer
             if not opened:
                 subprocess.Popen(["explorer.exe", str(target_path)], creationflags=CREATE_NO_WINDOW)
 

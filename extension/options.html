@@ -84,6 +84,33 @@
         </div>
       </section>
 
+      <!-- Section: Authentication & Cookies -->
+      <section class="settings-card">
+        <h2 class="card-title">認証・Cookie設定（年齢制限・ログイン対策）</h2>
+        <p class="section-description">YouTubeの年齢制限動画（GTA VI等）や会員限定動画など、ログインが必要なコンテンツをダウンロードする際にブラウザのログイン情報を連携します。</p>
+
+        <div class="form-group">
+          <label for="cookiesFromBrowser" class="form-label">ブラウザからCookieを連携 (--cookies-from-browser)</label>
+          <select id="cookiesFromBrowser" class="form-select">
+            <option value="auto" selected>自動連携 (Comet / Chrome / Edge 現在のブラウザから自動取得 [推奨])</option>
+            <option value="">使用しない (None)</option>
+            <option value="chrome">Google Chrome (外部)</option>
+            <option value="edge">Microsoft Edge (外部)</option>
+            <option value="brave">Brave (外部)</option>
+            <option value="firefox">Firefox (外部)</option>
+            <option value="vivaldi">Vivaldi (外部)</option>
+            <option value="opera">Opera (外部)</option>
+          </select>
+          <p class="form-help">「自動連携」にすると、現在開いているブラウザ（Comet等）のログイン状態を使って自動ダウンロードします。</p>
+        </div>
+
+        <div class="form-group">
+          <label for="cookiesFile" class="form-label">Cookieファイル（任意: --cookies）</label>
+          <input type="text" id="cookiesFile" class="form-input" placeholder="例: cookies.txt または D:\path\to\cookies.txt" />
+          <p class="form-help">cookies.txt ファイルから読み込む場合はパスを指定します（ブラウザ連携が優先されます）。</p>
+        </div>
+      </section>
+
       <!-- Section: Connection Test -->
       <section class="settings-card">
         <h2 class="card-title">ホスト接続テスト</h2>

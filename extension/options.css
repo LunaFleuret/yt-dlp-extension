@@ -112,6 +112,12 @@ body {
   padding-bottom: 10px;
 }
 
+.section-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
 /* Forms */
 .form-group {
   display: flex;

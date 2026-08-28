@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const embedThumbnailCheckbox = document.getElementById("embedThumbnail");
   const embedMetadataCheckbox = document.getElementById("embedMetadata");
   const embedSubtitlesCheckbox = document.getElementById("embedSubtitles");
+  const cookiesFromBrowserSelect = document.getElementById("cookiesFromBrowser");
+  const cookiesFileInput = document.getElementById("cookiesFile");
 
   const testConnBtn = document.getElementById("testConnBtn");
   const connResult = document.getElementById("connResult");
@@ -20,7 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
     "savedDownloadDir",
     "savedEmbedThumbnail",
     "savedEmbedMetadata",
-    "savedEmbedSubtitles"
+    "savedEmbedSubtitles",
+    "savedCookiesFromBrowser",
+    "savedCookiesFile"
   ], (items) => {
     if (items.savedType) defaultTypeSelect.value = items.savedType;
     if (items.savedVideoQuality) defaultVideoQualitySelect.value = items.savedVideoQuality;
@@ -29,6 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (items.savedEmbedThumbnail !== undefined) embedThumbnailCheckbox.checked = items.savedEmbedThumbnail;
     if (items.savedEmbedMetadata !== undefined) embedMetadataCheckbox.checked = items.savedEmbedMetadata;
     if (items.savedEmbedSubtitles !== undefined) embedSubtitlesCheckbox.checked = items.savedEmbedSubtitles;
+    cookiesFromBrowserSelect.value = (items.savedCookiesFromBrowser !== undefined) ? items.savedCookiesFromBrowser : "auto";
+    if (items.savedCookiesFile !== undefined) cookiesFileInput.value = items.savedCookiesFile;
   });
 
   // Test Host Connection
@@ -57,7 +63,9 @@ document.addEventListener("DOMContentLoaded", () => {
       savedDownloadDir: downloadDirInput.value.trim(),
       savedEmbedThumbnail: embedThumbnailCheckbox.checked,
       savedEmbedMetadata: embedMetadataCheckbox.checked,
-      savedEmbedSubtitles: embedSubtitlesCheckbox.checked
+      savedEmbedSubtitles: embedSubtitlesCheckbox.checked,
+      savedCookiesFromBrowser: cookiesFromBrowserSelect.value,
+      savedCookiesFile: cookiesFileInput.value.trim()
     };
 
     chrome.storage.sync.set(configData, () => {
@@ -67,7 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
           download_dir: configData.savedDownloadDir,
           embed_thumbnail: configData.savedEmbedThumbnail,
           embed_metadata: configData.savedEmbedMetadata,
-          embed_subtitles: configData.savedEmbedSubtitles
+          embed_subtitles: configData.savedEmbedSubtitles,
+          cookies_from_browser: configData.savedCookiesFromBrowser,
+          cookies_file: configData.savedCookiesFile
         }
       }, () => {
         saveStatus.textContent = "設定を保存しました。";

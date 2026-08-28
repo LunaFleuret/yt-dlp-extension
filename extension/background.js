@@ -81,8 +81,76 @@ function pollTasksStatus() {
   });
 }
 
+// Cookie helper to export browser cookies in Netscape format
+async function getNetscapeCookies(targetUrl) {
+  try {
+    if (!chrome.cookies) return null;
+    let urlObj;
+    try {
+      urlObj = new URL(targetUrl);
+    } catch (e) {
+      return null;
+    }
+
+    const domain = urlObj.hostname;
+    let domainsToQuery = [domain];
+    if (domain.includes("youtube.com") || domain.includes("youtu.be")) {
+      domainsToQuery = [".youtube.com", "youtube.com", ".google.com", "google.com"];
+    }
+
+    let allCookies = [];
+    for (const d of domainsToQuery) {
+      try {
+        const cookies = await chrome.cookies.getAll({ domain: d });
+        if (Array.isArray(cookies)) {
+          allCookies = allCookies.concat(cookies);
+        }
+      } catch (e) {}
+    }
+
+    if (allCookies.length === 0) {
+      try {
+        const cookies = await chrome.cookies.getAll({ url: targetUrl });
+        if (Array.isArray(cookies)) {
+          allCookies = allCookies.concat(cookies);
+        }
+      } catch (e) {}
+    }
+
+    if (allCookies.length === 0) return null;
+
+    const seen = new Set();
+    const lines = [
+      "# Netscape HTTP Cookie File",
+      "# http://curl.haxx.se/rfc/cookie_spec.html",
+      "# This is a generated file!  Do not edit.",
+      ""
+    ];
+
+    for (const c of allCookies) {
+      const key = `${c.domain}|${c.name}|${c.path}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      const d = c.domain || "";
+      const includeSubdomains = d.startsWith(".") ? "TRUE" : "FALSE";
+      const path = c.path || "/";
+      const secure = c.secure ? "TRUE" : "FALSE";
+      const expires = c.expirationDate ? Math.round(c.expirationDate) : 0;
+      const name = c.name || "";
+      const value = c.value || "";
+
+      lines.push(`${d}\t${includeSubdomains}\t${path}\t${secure}\t${expires}\t${name}\t${value}`);
+    }
+
+    return lines.join("\n");
+  } catch (err) {
+    return null;
+  }
+}
+
 // Handle Context Menu Clicks
-chrome.contextMenus.onClicked.addListener((info, tab) => {
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   const targetUrl = info.linkUrl || info.pageUrl || (tab && tab.url);
   if (!targetUrl) return;
 
@@ -104,35 +172,72 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     audioFormat = "flac";
   }
 
-  sendToNativeHost({
-    action: "download",
-    url: targetUrl,
-    title: (tab && tab.title) ? tab.title : targetUrl,
-    download_type: downloadType,
-    video_quality: videoQuality,
-    video_format: "mp4",
-    audio_format: audioFormat,
-    embed_thumbnail: true,
-    embed_metadata: true
-  }, (response) => {
-    if (response && response.status === "success") {
-      showNotification("Download Started", `Downloading:\n${targetUrl}`);
-      pollTasksStatus();
-    } else {
-      const err = response ? response.error : "Failed to connect to native host";
-      showNotification("Download Error", `Error: ${err}`, true);
+  chrome.storage.sync.get([
+    "savedEmbedThumbnail",
+    "savedEmbedMetadata",
+    "savedEmbedSubtitles",
+    "savedCookiesFromBrowser",
+    "savedCookiesFile",
+    "savedDownloadDir"
+  ], async (items) => {
+    let cookiesData = "";
+    const cookiesFromBrowser = items.savedCookiesFromBrowser || "auto";
+
+    if (cookiesFromBrowser === "auto" || !cookiesFromBrowser) {
+      cookiesData = await getNetscapeCookies(targetUrl) || "";
     }
+
+    sendToNativeHost({
+      action: "download",
+      url: targetUrl,
+      title: (tab && tab.title) ? tab.title : targetUrl,
+      download_type: downloadType,
+      video_quality: videoQuality,
+      video_format: "mp4",
+      audio_format: audioFormat,
+      embed_thumbnail: items.savedEmbedThumbnail !== undefined ? items.savedEmbedThumbnail : true,
+      embed_metadata: items.savedEmbedMetadata !== undefined ? items.savedEmbedMetadata : true,
+      embed_subtitles: items.savedEmbedSubtitles !== undefined ? items.savedEmbedSubtitles : false,
+      cookies_from_browser: cookiesData ? "" : (cookiesFromBrowser === "auto" ? "" : cookiesFromBrowser),
+      cookies_file: items.savedCookiesFile || "",
+      cookies_data: cookiesData,
+      download_dir: items.savedDownloadDir || ""
+    }, (response) => {
+      if (response && response.status === "success") {
+        showNotification("Download Started", `Downloading:\n${targetUrl}`);
+        pollTasksStatus();
+      } else {
+        const err = response ? response.error : "Failed to connect to native host";
+        showNotification("Download Error", `Error: ${err}`, true);
+      }
+    });
   });
 });
 
 // Handle Messages from Popup / Options
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  sendToNativeHost(message, (response) => {
-    if (message.action === "download" || message.action === "cancel_task") {
-      pollTasksStatus();
+  (async () => {
+    try {
+      if (message.action === "download") {
+        if (!message.cookies_data && (!message.cookies_from_browser || message.cookies_from_browser === "auto")) {
+          const cookieText = await getNetscapeCookies(message.url);
+          if (cookieText) {
+            message.cookies_data = cookieText;
+            message.cookies_from_browser = "";
+          }
+        }
+      }
+
+      sendToNativeHost(message, (response) => {
+        if (message.action === "download" || message.action === "cancel_task") {
+          pollTasksStatus();
+        }
+        sendResponse(response);
+      });
+    } catch (e) {
+      sendResponse({ status: "error", error: e.toString() });
     }
-    sendResponse(response);
-  });
+  })();
   return true; // Keep message channel open for async response
 });
 

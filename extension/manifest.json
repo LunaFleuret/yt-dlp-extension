@@ -10,7 +10,11 @@
     "nativeMessaging",
     "storage",
     "notifications",
-    "alarms"
+    "alarms",
+    "cookies"
+  ],
+  "host_permissions": [
+    "*://*/*"
   ],
   "background": {
     "service_worker": "background.js"
