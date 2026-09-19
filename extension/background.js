@@ -20,6 +20,13 @@ chrome.runtime.onInstalled.addListener(() => {
 
   chrome.contextMenus.create({
     parentId: "ytdlp_parent",
+    id: "ytdlp_video_whisper",
+    title: "Download Video + Whisper AI Subtitles",
+    contexts: ["page", "link"]
+  });
+
+  chrome.contextMenus.create({
+    parentId: "ytdlp_parent",
     id: "ytdlp_video_1080",
     title: "Download Video (1080p MP4)",
     contexts: ["page", "link"]
@@ -158,9 +165,15 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   let videoQuality = "best";
   let audioFormat = "mp3";
 
+  let whisperEnabled = false;
+
   if (info.menuItemId === "ytdlp_video_best") {
     downloadType = "video";
     videoQuality = "best";
+  } else if (info.menuItemId === "ytdlp_video_whisper") {
+    downloadType = "video";
+    videoQuality = "best";
+    whisperEnabled = true;
   } else if (info.menuItemId === "ytdlp_video_1080") {
     downloadType = "video";
     videoQuality = "1080";
@@ -176,6 +189,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     "savedEmbedThumbnail",
     "savedEmbedMetadata",
     "savedEmbedSubtitles",
+    "savedWhisperEnabled",
+    "savedWhisperModel",
+    "savedWhisperBurnMode",
     "savedCookiesFromBrowser",
     "savedCookiesFile",
     "savedDownloadDir"
@@ -187,6 +203,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       cookiesData = await getNetscapeCookies(targetUrl) || "";
     }
 
+    const finalWhisper = whisperEnabled || (items.savedWhisperEnabled === true);
+    const burnSubtitles = (items.savedWhisperBurnMode === "burn");
+
     sendToNativeHost({
       action: "download",
       url: targetUrl,
@@ -197,7 +216,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       audio_format: audioFormat,
       embed_thumbnail: items.savedEmbedThumbnail !== undefined ? items.savedEmbedThumbnail : true,
       embed_metadata: items.savedEmbedMetadata !== undefined ? items.savedEmbedMetadata : true,
-      embed_subtitles: items.savedEmbedSubtitles !== undefined ? items.savedEmbedSubtitles : false,
+      embed_subtitles: finalWhisper ? false : (items.savedEmbedSubtitles !== undefined ? items.savedEmbedSubtitles : false),
+      whisper_enabled: finalWhisper,
+      whisper_burn_subtitles: burnSubtitles,
+      whisper_model: items.savedWhisperModel || "large-v3-turbo",
       cookies_from_browser: cookiesData ? "" : (cookiesFromBrowser === "auto" ? "" : cookiesFromBrowser),
       cookies_file: items.savedCookiesFile || "",
       cookies_data: cookiesData,

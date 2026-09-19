@@ -90,6 +90,13 @@ def start_download(msg, config):
     cookies_file = msg.get("cookies_file", config.get("cookies_file", "")).strip()
     cookies_data = msg.get("cookies_data", "").strip()
 
+    whisper_enabled = msg.get("whisper_enabled", config.get("whisper_enabled", False))
+    whisper_model = msg.get("whisper_model", config.get("whisper_model", "large-v3-turbo"))
+    whisper_burn_subtitles = msg.get("whisper_burn_subtitles", config.get("whisper_burn_subtitles", False))
+    whisper_save_md = msg.get("whisper_save_md", config.get("whisper_save_md", False))
+    whisper_bin_path = config.get("whisper_bin_path", "C:/AI-Models/Whisper-Models/bin/whisper-cli.exe")
+    whisper_models_dir = config.get("whisper_models_dir", "C:/AI-Models/Whisper-Models")
+
     tasks_dir = get_tasks_dir()
     task_file = tasks_dir / f"task_{task_id}.json"
 
@@ -115,6 +122,12 @@ def start_download(msg, config):
         "embed_thumbnail": embed_thumbnail,
         "embed_metadata": embed_metadata,
         "embed_subtitles": embed_subtitles,
+        "whisper_enabled": whisper_enabled,
+        "whisper_model": whisper_model,
+        "whisper_burn_subtitles": whisper_burn_subtitles,
+        "whisper_save_md": whisper_save_md,
+        "whisper_bin_path": whisper_bin_path,
+        "whisper_models_dir": whisper_models_dir,
         "custom_args": custom_args,
         "download_dir": download_dir,
         "cookies_from_browser": cookies_from_browser,

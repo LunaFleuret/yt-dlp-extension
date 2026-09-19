@@ -24,15 +24,24 @@ document.addEventListener("DOMContentLoaded", async () => {
   const videoFormatSelect = document.getElementById("videoFormat");
   const videoThumbnailCheckbox = document.getElementById("videoThumbnail");
   const videoSubtitlesCheckbox = document.getElementById("videoSubtitles");
+  const whisperSubtitlesCheckbox = document.getElementById("whisperSubtitles");
+  const whisperSubOptions = document.getElementById("whisperSubOptions");
+  const whisperBurnModeSelect = document.getElementById("whisperBurnMode");
 
   const audioFormatSelect = document.getElementById("audioFormat");
   const audioThumbnailCheckbox = document.getElementById("audioThumbnail");
+  const audioWhisperCheckbox = document.getElementById("audioWhisper");
 
   const customArgsInput = document.getElementById("customArgs");
 
   const downloadBtn = document.getElementById("downloadBtn");
   const btnText = downloadBtn.querySelector(".btn-text");
   const btnSpinner = document.getElementById("btnSpinner");
+
+  const downloadWhisperBtn = document.getElementById("downloadWhisperBtn");
+  const whisperBtnText = downloadWhisperBtn.querySelector(".btn-text");
+  const whisperBtnSpinner = document.getElementById("whisperBtnSpinner");
+
   const statusBanner = document.getElementById("statusBanner");
   const statusText = document.getElementById("statusText");
 
@@ -43,6 +52,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let pollInterval = null;
   let currentTabTitle = "";
+
+  // Whisper & Subtitles toggle correlation
+  whisperSubtitlesCheckbox.addEventListener("change", () => {
+    whisperSubOptions.classList.toggle("hidden", !whisperSubtitlesCheckbox.checked);
+    if (whisperSubtitlesCheckbox.checked) {
+      videoSubtitlesCheckbox.checked = false;
+    }
+  });
+
+  videoSubtitlesCheckbox.addEventListener("change", () => {
+    if (videoSubtitlesCheckbox.checked) {
+      whisperSubtitlesCheckbox.checked = false;
+      whisperSubOptions.classList.add("hidden");
+    }
+  });
 
   // Tab switching
   tabNewBtn.addEventListener("click", () => switchTab("new"));
@@ -89,7 +113,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     "savedCustomArgs",
     "savedVideoThumbnail",
     "savedVideoSubtitles",
-    "savedAudioThumbnail"
+    "savedWhisperSubtitles",
+    "savedWhisperBurnMode",
+    "savedAudioThumbnail",
+    "savedAudioWhisper"
   ], (items) => {
     if (items.savedType) {
       const radio = document.querySelector(`input[name="downloadType"][value="${items.savedType}"]`);
@@ -104,7 +131,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (items.savedCustomArgs && customArgsInput) customArgsInput.value = items.savedCustomArgs;
     if (items.savedVideoThumbnail !== undefined) videoThumbnailCheckbox.checked = items.savedVideoThumbnail;
     if (items.savedVideoSubtitles !== undefined) videoSubtitlesCheckbox.checked = items.savedVideoSubtitles;
+    if (items.savedWhisperSubtitles !== undefined) {
+      whisperSubtitlesCheckbox.checked = items.savedWhisperSubtitles;
+      whisperSubOptions.classList.toggle("hidden", !items.savedWhisperSubtitles);
+    }
+    if (items.savedWhisperBurnMode) whisperBurnModeSelect.value = items.savedWhisperBurnMode;
     if (items.savedAudioThumbnail !== undefined) audioThumbnailCheckbox.checked = items.savedAudioThumbnail;
+    if (items.savedAudioWhisper !== undefined) audioWhisperCheckbox.checked = items.savedAudioWhisper;
   });
 
   // Fetch active tab
@@ -128,8 +161,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Download Handler
-  downloadBtn.addEventListener("click", async () => {
+  // Unified Download Handler
+  async function triggerDownload(forceWhisper = null) {
     const url = pageUrlInput.value.trim();
     if (!url) {
       showStatus("有効な URL を入力してください。", "error");
@@ -143,7 +176,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     const customArgs = customArgsInput.value.trim();
 
     const embedThumbnail = selectedType === "video" ? videoThumbnailCheckbox.checked : audioThumbnailCheckbox.checked;
-    const embedSubtitles = selectedType === "video" ? videoSubtitlesCheckbox.checked : false;
+
+    // Resolve Whisper flag
+    let isWhisper = false;
+    if (forceWhisper !== null) {
+      isWhisper = forceWhisper;
+    } else {
+      isWhisper = (selectedType === "video") ? whisperSubtitlesCheckbox.checked : audioWhisperCheckbox.checked;
+    }
+
+    const embedSubtitles = (selectedType === "video" && !isWhisper) ? videoSubtitlesCheckbox.checked : false;
+    const burnSubtitles = (whisperBurnModeSelect.value === "burn");
 
     // Save current choices to storage
     chrome.storage.sync.set({
@@ -154,11 +197,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       savedCustomArgs: customArgs,
       savedVideoThumbnail: videoThumbnailCheckbox.checked,
       savedVideoSubtitles: videoSubtitlesCheckbox.checked,
-      savedAudioThumbnail: audioThumbnailCheckbox.checked
+      savedWhisperSubtitles: whisperSubtitlesCheckbox.checked,
+      savedWhisperBurnMode: whisperBurnModeSelect.value,
+      savedAudioThumbnail: audioThumbnailCheckbox.checked,
+      savedAudioWhisper: audioWhisperCheckbox.checked
     });
 
+    setLoading(true, isWhisper);
+
     // Fetch saved cookie & folder settings
-    chrome.storage.sync.get(["savedCookiesFromBrowser", "savedCookiesFile", "savedDownloadDir"], (settings) => {
+    chrome.storage.sync.get(["savedCookiesFromBrowser", "savedCookiesFile", "savedDownloadDir", "savedWhisperModel"], (settings) => {
       const payload = {
         action: "download",
         url: url,
@@ -170,6 +218,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         embed_thumbnail: embedThumbnail,
         embed_metadata: true,
         embed_subtitles: embedSubtitles,
+        whisper_enabled: isWhisper,
+        whisper_burn_subtitles: burnSubtitles,
+        whisper_model: settings.savedWhisperModel || "large-v3-turbo",
         custom_args: customArgs,
         cookies_from_browser: settings.savedCookiesFromBrowser || "auto",
         cookies_file: settings.savedCookiesFile || "",
@@ -187,6 +238,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       });
     });
+  }
+
+  // Button 1: Normal Download
+  downloadBtn.addEventListener("click", () => {
+    triggerDownload(whisperSubtitlesCheckbox.checked);
+  });
+
+  // Button 2: Dedicated Whisper Button
+  downloadWhisperBtn.addEventListener("click", () => {
+    triggerDownload(true);
   });
 
   // Open output folder in Files app / explorer
@@ -220,6 +281,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     switch (status) {
       case "queued": return "待機中";
       case "downloading": return "ダウンロード中";
+      case "transcribing": return "文字起こし中";
       case "converting": return "変換・タグ埋込中";
       case "completed": return "完了";
       case "error": return "エラー";
@@ -236,7 +298,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const tasks = response.tasks;
-      const activeTasks = tasks.filter(t => t.status === "downloading" || t.status === "queued" || t.status === "converting");
+      const activeTasks = tasks.filter(t => t.status === "downloading" || t.status === "queued" || t.status === "transcribing" || t.status === "converting");
 
       if (activeTasks.length > 0) {
         activeTasksBadge.textContent = activeTasks.length;
@@ -273,10 +335,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           tasksList.appendChild(card);
         }
 
-        const isRunning = task.status === "downloading" || task.status === "queued" || task.status === "converting";
+        const isRunning = task.status === "downloading" || task.status === "queued" || task.status === "transcribing" || task.status === "converting";
         const percent = Math.min(100, Math.max(0, task.percent || 0));
 
         let progressClass = "progress-fill";
+        if (task.status === "transcribing") progressClass += " transcribing";
         if (task.status === "converting") progressClass += " converting";
         if (task.status === "completed") progressClass += " completed";
         if (task.status === "error") progressClass += " error";
@@ -348,7 +411,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Switch to tasks tab if tasks are currently running
   chrome.runtime.sendMessage({ action: "get_tasks" }, (response) => {
     if (response && response.status === "success" && Array.isArray(response.tasks)) {
-      const active = response.tasks.filter(t => t.status === "downloading" || t.status === "queued" || t.status === "converting");
+      const active = response.tasks.filter(t => t.status === "downloading" || t.status === "queued" || t.status === "transcribing" || t.status === "converting");
       if (active.length > 0) {
         switchTab("tasks");
       }
@@ -359,14 +422,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     stopPolling();
   });
 
-  function setLoading(isLoading) {
+  function setLoading(isLoading, isWhisper = false) {
     downloadBtn.disabled = isLoading;
+    downloadWhisperBtn.disabled = isLoading;
     if (isLoading) {
-      btnText.textContent = "開始中...";
-      btnSpinner.classList.remove("hidden");
+      if (isWhisper) {
+        whisperBtnText.textContent = "開始中...";
+        whisperBtnSpinner.classList.remove("hidden");
+      } else {
+        btnText.textContent = "開始中...";
+        btnSpinner.classList.remove("hidden");
+      }
     } else {
-      btnText.textContent = "ダウンロード開始";
+      btnText.textContent = "通常ダウンロード";
       btnSpinner.classList.add("hidden");
+      whisperBtnText.textContent = "Whisper文字起こし";
+      whisperBtnSpinner.classList.add("hidden");
     }
   }
 

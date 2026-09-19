@@ -305,22 +305,55 @@ body {
   color: var(--text-secondary);
 }
 
+/* Dual Action Buttons Group */
+.action-buttons-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
 /* Primary Button */
 .primary-button {
   background: var(--accent-gradient);
   color: #ffffff;
   border: none;
   border-radius: var(--radius-md);
-  padding: 11px;
-  font-size: 13px;
+  padding: 11px 8px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  transition: opacity 0.2s, transform 0.1s;
+  gap: 6px;
+  transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
   box-shadow: 0 3px 10px rgba(78, 110, 242, 0.35);
+  white-space: nowrap;
+}
+
+.whisper-btn {
+  background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+  box-shadow: 0 3px 10px rgba(219, 39, 119, 0.3);
+}
+
+.whisper-btn:hover {
+  opacity: 0.95;
+  box-shadow: 0 4px 14px rgba(219, 39, 119, 0.45);
+}
+
+.whisper-toggle-item .toggle-label {
+  color: #d8b4fe;
+  font-weight: 500;
+}
+
+.whisper-sub-options {
+  margin-left: 23px;
+  margin-top: 4px;
+  padding: 8px 10px;
+  background: rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: var(--radius-sm);
+  animation: fadeIn 0.2s ease;
 }
 
 .primary-button:hover {
@@ -451,6 +484,12 @@ body {
   color: #7b96f8;
 }
 
+.task-badge.transcribing {
+  background: rgba(168, 85, 247, 0.25);
+  color: #d8b4fe;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
 .task-badge.converting {
   background: var(--warning-bg);
   color: var(--warning-text);
@@ -486,6 +525,18 @@ body {
   background: var(--progress-gradient);
   border-radius: 3px;
   transition: width 0.3s ease;
+}
+
+.progress-fill.transcribing {
+  width: 100% !important;
+  background: repeating-linear-gradient(
+    45deg,
+    #a855f7,
+    #a855f7 10px,
+    #7e22ce 10px,
+    #7e22ce 20px
+  );
+  animation: moveStripes 1s linear infinite;
 }
 
 .progress-fill.converting {

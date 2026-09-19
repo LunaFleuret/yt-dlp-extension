@@ -6,6 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const embedThumbnailCheckbox = document.getElementById("embedThumbnail");
   const embedMetadataCheckbox = document.getElementById("embedMetadata");
   const embedSubtitlesCheckbox = document.getElementById("embedSubtitles");
+  const whisperEnabledCheckbox = document.getElementById("whisperEnabled");
+  const whisperModelSelect = document.getElementById("whisperModel");
+  const whisperBurnSubtitlesSelect = document.getElementById("whisperBurnSubtitles");
+  const whisperSaveMdCheckbox = document.getElementById("whisperSaveMd");
   const cookiesFromBrowserSelect = document.getElementById("cookiesFromBrowser");
   const cookiesFileInput = document.getElementById("cookiesFile");
 
@@ -23,6 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
     "savedEmbedThumbnail",
     "savedEmbedMetadata",
     "savedEmbedSubtitles",
+    "savedWhisperEnabled",
+    "savedWhisperModel",
+    "savedWhisperBurnMode",
+    "savedWhisperSaveMd",
     "savedCookiesFromBrowser",
     "savedCookiesFile"
   ], (items) => {
@@ -33,6 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (items.savedEmbedThumbnail !== undefined) embedThumbnailCheckbox.checked = items.savedEmbedThumbnail;
     if (items.savedEmbedMetadata !== undefined) embedMetadataCheckbox.checked = items.savedEmbedMetadata;
     if (items.savedEmbedSubtitles !== undefined) embedSubtitlesCheckbox.checked = items.savedEmbedSubtitles;
+    if (items.savedWhisperEnabled !== undefined) whisperEnabledCheckbox.checked = items.savedWhisperEnabled;
+    if (items.savedWhisperModel) whisperModelSelect.value = items.savedWhisperModel;
+    if (items.savedWhisperBurnMode) whisperBurnSubtitlesSelect.value = items.savedWhisperBurnMode;
+    if (items.savedWhisperSaveMd !== undefined) whisperSaveMdCheckbox.checked = items.savedWhisperSaveMd;
     cookiesFromBrowserSelect.value = (items.savedCookiesFromBrowser !== undefined) ? items.savedCookiesFromBrowser : "auto";
     if (items.savedCookiesFile !== undefined) cookiesFileInput.value = items.savedCookiesFile;
   });
@@ -64,6 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
       savedEmbedThumbnail: embedThumbnailCheckbox.checked,
       savedEmbedMetadata: embedMetadataCheckbox.checked,
       savedEmbedSubtitles: embedSubtitlesCheckbox.checked,
+      savedWhisperEnabled: whisperEnabledCheckbox.checked,
+      savedWhisperModel: whisperModelSelect.value,
+      savedWhisperBurnMode: whisperBurnSubtitlesSelect.value,
+      savedWhisperSaveMd: whisperSaveMdCheckbox.checked,
       savedCookiesFromBrowser: cookiesFromBrowserSelect.value,
       savedCookiesFile: cookiesFileInput.value.trim()
     };
@@ -76,6 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
           embed_thumbnail: configData.savedEmbedThumbnail,
           embed_metadata: configData.savedEmbedMetadata,
           embed_subtitles: configData.savedEmbedSubtitles,
+          whisper_enabled: configData.savedWhisperEnabled,
+          whisper_model: configData.savedWhisperModel,
+          whisper_burn_subtitles: configData.savedWhisperBurnMode === "burn",
+          whisper_save_md: configData.savedWhisperSaveMd,
           cookies_from_browser: configData.savedCookiesFromBrowser,
           cookies_file: configData.savedCookiesFile
         }

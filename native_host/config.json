@@ -5,11 +5,19 @@
   "show_console": false,
   "keep_console_open": false,
   "cookies_from_browser": "auto",
-  "cookies_file": "\"E:\\Coding\\yt-dlp-extension\\www.youtube.com_cookies.txt\"",
+  "cookies_file": "../www.youtube.com_cookies.txt",
   "default_type": "video",
   "default_video_quality": "best",
   "default_audio_format": "mp3",
   "embed_thumbnail": true,
   "embed_metadata": true,
-  "embed_subtitles": false
+  "embed_subtitles": false,
+  "whisper_enabled": false,
+  "whisper_bin_path": "C:/AI-Models/Whisper-Models/bin/whisper-cli.exe",
+  "whisper_models_dir": "C:/AI-Models/Whisper-Models",
+  "whisper_model": "large-v3-turbo",
+  "whisper_burn_subtitles": false,
+  "whisper_save_md": false,
+  "whisper_threads": 8,
+  "whisper_device": "0"
 }

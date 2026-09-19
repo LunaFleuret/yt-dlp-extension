@@ -79,7 +79,46 @@
         <div class="form-group-checkbox">
           <label class="checkbox-label">
             <input type="checkbox" id="embedSubtitles" />
-            <span class="checkbox-text">動画ダウンロード時に字幕（日本語・英語等）を自動埋め込み</span>
+            <span class="checkbox-text">動画ダウンロード時にYouTubeデフォルト字幕を自動埋め込み</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Section: Whisper AI Transcription -->
+      <section class="settings-card">
+        <h2 class="card-title">Whisper AI 自動文字起こし・字幕設定 (Radeon RX 9060 XT / Vulkan)</h2>
+        <p class="section-description">ローカルのWhisper Vulkanエンジンを活用し、高精度な日本語文字起こしを行って動画に字幕を埋め込み・焼き付けます。</p>
+
+        <div class="form-group-checkbox">
+          <label class="checkbox-label">
+            <input type="checkbox" id="whisperEnabled" />
+            <span class="checkbox-text">デフォルトでWhisper文字起こし字幕を有効にする</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="whisperModel" class="form-label">使用Whisperモデル</label>
+          <select id="whisperModel" class="form-select">
+            <option value="large-v3-turbo" selected>large-v3-turbo (FP16 / 1.6GB) [既存・超高速・推奨]</option>
+            <option value="large-v3">large-v3 (FP16 / 3.1GB) [最高精度]</option>
+            <option value="small">small (約460MB) [軽量]</option>
+            <option value="base">base (約140MB) [超軽量]</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="whisperBurnSubtitles" class="form-label">字幕の統合方式（埋め込み vs 焼き付け）</label>
+          <select id="whisperBurnSubtitles" class="form-select">
+            <option value="embed" selected>ソフトサブ埋め込み (無劣化コピー・数秒で完了・プレイヤーでON/OFF可能 [推奨])</option>
+            <option value="burn">ハードサブ焼き付け (映像そのものに文字を焼き付け・再エンコード)</option>
+          </select>
+          <p class="form-help">「ソフトサブ埋め込み」は元の画質とサムネイルを100%保持しつつ無劣化・高速で完了します。「ハードサブ焼き付け」は映像を再エンコードして字幕を直接描画します。</p>
+        </div>
+
+        <div class="form-group-checkbox">
+          <label class="checkbox-label">
+            <input type="checkbox" id="whisperSaveMd" />
+            <span class="checkbox-text">文字起こし結果をMarkdown形式 (.md) でも保存する</span>
           </label>
         </div>
       </section>

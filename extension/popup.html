@@ -88,8 +88,21 @@
           </label>
           <label class="toggle-item">
             <input type="checkbox" id="videoSubtitles" />
-            <span class="toggle-label">字幕を埋め込む</span>
+            <span class="toggle-label">YouTube字幕を埋め込む</span>
           </label>
+          <label class="toggle-item whisper-toggle-item">
+            <input type="checkbox" id="whisperSubtitles" />
+            <span class="toggle-label">Whisper AIで文字起こし</span>
+          </label>
+          <div class="whisper-sub-options hidden" id="whisperSubOptions">
+            <div class="form-col">
+              <label class="input-label" for="whisperBurnMode">字幕の焼き付け・埋め込み形式</label>
+              <select id="whisperBurnMode" class="select-input">
+                <option value="embed" selected>ソフトサブ埋め込み (無劣化・推奨)</option>
+                <option value="burn">ハードサブ焼き付け (映像再エンコード)</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -111,6 +124,10 @@
             <input type="checkbox" id="audioThumbnail" checked />
             <span class="toggle-label">ジャケット画像・アーティスト名を埋め込む</span>
           </label>
+          <label class="toggle-item whisper-toggle-item">
+            <input type="checkbox" id="audioWhisper" />
+            <span class="toggle-label">Whisperで文字起こし (Markdown出力)</span>
+          </label>
         </div>
       </div>
 
@@ -122,11 +139,17 @@
         </div>
       </div>
 
-      <!-- Action Button -->
-      <button id="downloadBtn" class="primary-button">
-        <span class="btn-text">ダウンロード開始</span>
-        <div class="spinner hidden" id="btnSpinner"></div>
-      </button>
+      <!-- Action Buttons (Dual Buttons: Normal & Whisper) -->
+      <div class="action-buttons-group">
+        <button id="downloadBtn" class="primary-button normal-btn" title="従来の通常ダウンロード">
+          <span class="btn-text">通常ダウンロード</span>
+          <div class="spinner hidden" id="btnSpinner"></div>
+        </button>
+        <button id="downloadWhisperBtn" class="primary-button whisper-btn" title="Whisperで文字起こしして字幕を付与">
+          <span class="btn-text">Whisper文字起こし</span>
+          <div class="spinner hidden" id="whisperBtnSpinner"></div>
+        </button>
+      </div>
 
       <!-- Status banner -->
       <div id="statusBanner" class="status-banner hidden">
