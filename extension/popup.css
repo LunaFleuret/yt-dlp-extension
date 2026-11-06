@@ -1,37 +1,47 @@
 :root {
-  --bg-primary: #0f1117;
-  --bg-secondary: #171b26;
-  --bg-card: #202636;
-  --bg-card-hover: #283044;
-  --bg-card-active: #313b54;
+  /* Discord Profile Dark Theme / Black & White Gradient */
+  --bg-gradient: linear-gradient(180deg, #2b2d31 0%, #1e1f22 26%, #111214 100%);
+  --bg-primary: #111214;
+  --bg-secondary: rgba(17, 18, 20, 0.85);
+  --bg-card: rgba(24, 25, 28, 0.75);
+  --bg-card-hover: rgba(35, 36, 40, 0.85);
+  --bg-card-active: #313338;
   
-  --border-color: #2b3348;
-  --border-focus: #5d78ff;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-focus: #ffffff;
   
-  --text-primary: #f2f5fb;
-  --text-secondary: #9aa5bc;
-  --text-muted: #677288;
+  --text-primary: #ffffff;
+  --text-secondary: #dbdee1;
+  --text-muted: #949ba4;
 
-  --accent-primary: #4e6ef2;
-  --accent-hover: #3d5cdb;
-  --accent-gradient: linear-gradient(135deg, #4e6ef2 0%, #7b52f5 100%);
-  --progress-gradient: linear-gradient(90deg, #4e6ef2 0%, #00d2ff 100%);
+  /* Accent: Monotone Black & White */
+  --accent-primary: #ffffff;
+  --accent-hover: #e3e5e8;
+  --accent-text: #111214;
   
-  --success-bg: rgba(34, 197, 94, 0.15);
-  --success-border: #22c55e;
-  --success-text: #4ade80;
+  /* Buttons */
+  --btn-dark-bg: #2b2d31;
+  --btn-dark-hover: #383a40;
+  --btn-dark-border: rgba(255, 255, 255, 0.16);
+  
+  --progress-gradient: linear-gradient(90deg, #71757e 0%, #ffffff 100%);
+  
+  --success-bg: rgba(255, 255, 255, 0.08);
+  --success-border: rgba(255, 255, 255, 0.25);
+  --success-text: #ffffff;
 
-  --warning-bg: rgba(234, 179, 8, 0.15);
-  --warning-border: #eab308;
+  --warning-bg: rgba(234, 179, 8, 0.12);
+  --warning-border: rgba(234, 179, 8, 0.4);
   --warning-text: #facc15;
 
-  --error-bg: rgba(239, 68, 68, 0.15);
-  --error-border: #ef4444;
-  --error-text: #f87171;
+  --error-bg: rgba(239, 68, 68, 0.14);
+  --error-border: rgba(239, 68, 68, 0.45);
+  --error-text: #fca5a5;
 
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -45,13 +55,33 @@
 body {
   width: 390px;
   min-height: 480px;
-  background-color: var(--bg-primary);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--font-family);
   font-size: 13px;
   line-height: 1.5;
   user-select: none;
   overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .container {
@@ -75,26 +105,27 @@ body {
 }
 
 .logo-badge {
-  background: var(--accent-gradient);
-  color: #ffffff;
-  font-weight: 700;
+  background: #ffffff;
+  color: #111214;
+  font-weight: 800;
   font-size: 11px;
   letter-spacing: 0.5px;
-  padding: 3px 6px;
+  padding: 3px 7px;
   border-radius: var(--radius-sm);
-  box-shadow: 0 2px 8px rgba(78, 110, 242, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .app-title {
   font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
 }
 
 .icon-button {
   background: transparent;
   border: none;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   cursor: pointer;
   padding: 6px;
   border-radius: var(--radius-sm);
@@ -106,14 +137,14 @@ body {
 
 .icon-button:hover {
   color: var(--text-primary);
-  background-color: var(--bg-card);
+  background-color: var(--btn-dark-bg);
 }
 
 /* Navigation Tabs */
 .tabs-nav {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background-color: var(--bg-secondary);
+  background-color: rgba(0, 0, 0, 0.35);
   padding: 3px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
@@ -123,8 +154,8 @@ body {
 .tab-btn {
   background: transparent;
   border: none;
-  color: var(--text-secondary);
-  padding: 6px 12px;
+  color: var(--text-muted);
+  padding: 7px 12px;
   font-size: 12px;
   font-weight: 600;
   border-radius: var(--radius-sm);
@@ -137,18 +168,19 @@ body {
 }
 
 .tab-btn:hover {
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 .tab-btn.active {
-  background-color: var(--bg-card);
-  color: var(--text-primary);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  background-color: #313338;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 .badge {
-  background-color: var(--accent-primary);
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #111214;
   font-size: 10px;
   padding: 1px 6px;
   border-radius: 10px;
@@ -165,10 +197,12 @@ body {
 
 /* Cards */
 .card {
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
 }
 
 .page-card {
@@ -180,7 +214,7 @@ body {
 .page-title {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -189,38 +223,43 @@ body {
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .input-label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .text-input, .select-input {
   width: 100%;
-  background-color: var(--bg-primary);
+  background-color: rgba(0, 0, 0, 0.45);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 8px 10px;
-  color: var(--text-primary);
+  color: #ffffff;
   font-size: 12px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
+}
+
+.text-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .text-input:focus, .select-input:focus {
-  border-color: var(--border-focus);
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
 }
 
 /* Segmented Control for Download Type */
 .type-segment {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  background-color: var(--bg-secondary);
+  background-color: rgba(0, 0, 0, 0.35);
   padding: 3px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
@@ -234,11 +273,12 @@ body {
   padding: 7px 4px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
+  border: 1px solid transparent;
 }
 
 .segment-btn input[type="radio"] {
@@ -248,14 +288,14 @@ body {
 }
 
 .segment-btn:hover {
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 .segment-btn.active {
-  background-color: var(--bg-card);
+  background-color: #313338;
   color: #ffffff;
-  border: 1px solid var(--border-focus);
-  box-shadow: 0 1px 6px rgba(78, 110, 242, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* Form Card */
@@ -281,7 +321,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-top: 4px;
+  padding-top: 6px;
   border-top: 1px solid var(--border-color);
 }
 
@@ -296,13 +336,18 @@ body {
 .toggle-item input[type="checkbox"] {
   width: 15px;
   height: 15px;
-  accent-color: var(--accent-primary);
+  accent-color: #ffffff;
   cursor: pointer;
 }
 
 .toggle-label {
   font-size: 12px;
   color: var(--text-secondary);
+  transition: color 0.15s ease;
+}
+
+.toggle-item:hover .toggle-label {
+  color: #ffffff;
 }
 
 /* Dual Action Buttons Group */
@@ -312,37 +357,56 @@ body {
   gap: 8px;
 }
 
-/* Primary Button */
+/* Primary Button (Normal Download: High Contrast Pure White) */
 .primary-button {
-  background: var(--accent-gradient);
-  color: #ffffff;
   border: none;
   border-radius: var(--radius-md);
   padding: 11px 8px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 6px;
-  transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
-  box-shadow: 0 3px 10px rgba(78, 110, 242, 0.35);
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
+.normal-btn {
+  background-color: #ffffff;
+  color: #111214;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+}
+
+.normal-btn:hover {
+  background-color: #e3e5e8;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.15);
+}
+
+.normal-btn:active {
+  transform: scale(0.98);
+}
+
+/* Whisper Button (Discord Message Button Style: Charcoal Grey with Border) */
 .whisper-btn {
-  background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
-  box-shadow: 0 3px 10px rgba(219, 39, 119, 0.3);
+  background-color: var(--btn-dark-bg);
+  color: #ffffff;
+  border: 1px solid var(--btn-dark-border);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
 }
 
 .whisper-btn:hover {
-  opacity: 0.95;
-  box-shadow: 0 4px 14px rgba(219, 39, 119, 0.45);
+  background-color: var(--btn-dark-hover);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.whisper-btn:active {
+  transform: scale(0.98);
 }
 
 .whisper-toggle-item .toggle-label {
-  color: #d8b4fe;
+  color: #ffffff;
   font-weight: 500;
 }
 
@@ -350,22 +414,14 @@ body {
   margin-left: 23px;
   margin-top: 4px;
   padding: 8px 10px;
-  background: rgba(124, 58, 237, 0.08);
-  border: 1px solid rgba(124, 58, 237, 0.25);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   animation: fadeIn 0.2s ease;
 }
 
-.primary-button:hover {
-  opacity: 0.95;
-}
-
-.primary-button:active {
-  transform: scale(0.98);
-}
-
 .primary-button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -397,6 +453,12 @@ body {
   padding: 0 2px;
 }
 
+.tasks-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
 .tasks-actions {
   display: flex;
   align-items: center;
@@ -404,27 +466,27 @@ body {
 }
 
 .action-divider {
-  color: var(--border-color);
+  color: rgba(255, 255, 255, 0.2);
   font-size: 10px;
 }
 
 .text-button {
   background: transparent;
   border: none;
-  color: var(--accent-primary);
+  color: #ffffff;
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   padding: 2px 4px;
   border-radius: var(--radius-sm);
   transition: opacity 0.2s;
+  opacity: 0.8;
 }
 
 .text-button:hover {
   text-decoration: underline;
-  opacity: 0.85;
+  opacity: 1;
 }
-
 
 .tasks-list {
   display: flex;
@@ -437,7 +499,7 @@ body {
 
 /* Task Item Card */
 .task-card {
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 10px 12px;
@@ -445,6 +507,11 @@ body {
   flex-direction: column;
   gap: 8px;
   transition: border-color 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.task-card:hover {
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 .task-card-header {
@@ -472,52 +539,60 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.3px;
   white-space: nowrap;
+  background: rgba(255, 255, 255, 0.08);
+  color: #dbdee1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .task-badge.queued {
-  background: rgba(148, 163, 184, 0.2);
-  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+  color: #949ba4;
 }
 
 .task-badge.downloading {
-  background: rgba(78, 110, 242, 0.2);
-  color: #7b96f8;
+  background: #ffffff;
+  color: #111214;
+  border: none;
 }
 
 .task-badge.transcribing {
-  background: rgba(168, 85, 247, 0.25);
-  color: #d8b4fe;
-  border: 1px solid rgba(168, 85, 247, 0.4);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .task-badge.converting {
   background: var(--warning-bg);
   color: var(--warning-text);
+  border-color: var(--warning-border);
 }
 
 .task-badge.completed {
-  background: var(--success-bg);
-  color: var(--success-text);
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .task-badge.error {
   background: var(--error-bg);
   color: var(--error-text);
+  border-color: var(--error-border);
 }
 
 .task-badge.cancelled {
-  background: rgba(100, 116, 139, 0.2);
-  color: #64748b;
+  background: rgba(255, 255, 255, 0.05);
+  color: #949ba4;
 }
 
 /* Progress Bar */
 .progress-container {
   width: 100%;
   height: 6px;
-  background-color: var(--bg-primary);
+  background-color: rgba(0, 0, 0, 0.5);
   border-radius: 3px;
   overflow: hidden;
   position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .progress-fill {
@@ -531,10 +606,10 @@ body {
   width: 100% !important;
   background: repeating-linear-gradient(
     45deg,
-    #a855f7,
-    #a855f7 10px,
-    #7e22ce 10px,
-    #7e22ce 20px
+    #ffffff,
+    #ffffff 10px,
+    #949ba4 10px,
+    #949ba4 20px
   );
   animation: moveStripes 1s linear infinite;
 }
@@ -552,7 +627,7 @@ body {
 }
 
 .progress-fill.completed {
-  background: var(--success-border);
+  background: #ffffff;
 }
 
 .progress-fill.error {
@@ -603,6 +678,7 @@ body {
   border-radius: var(--radius-sm);
   word-break: break-all;
   line-height: 1.4;
+  border: 1px solid var(--error-border);
 }
 
 .task-error-hint {
@@ -647,10 +723,15 @@ body {
 .spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ffffff;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: #111214;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
+}
+
+.whisper-btn .spinner {
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ffffff;
 }
 
 .hidden {

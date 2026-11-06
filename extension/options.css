@@ -1,26 +1,31 @@
 :root {
-  --bg-primary: #0f1117;
-  --bg-secondary: #171a23;
-  --bg-card: #1f2330;
-  --bg-card-hover: #262c3d;
+  /* Discord Profile Dark Theme / Black & White Gradient */
+  --bg-gradient: linear-gradient(180deg, #2b2d31 0%, #1e1f22 26%, #111214 100%);
+  --bg-primary: #111214;
+  --bg-secondary: rgba(17, 18, 20, 0.85);
+  --bg-card: rgba(24, 25, 28, 0.75);
+  --bg-card-hover: rgba(35, 36, 40, 0.85);
   
-  --border-color: #2b3245;
-  --border-focus: #5d78ff;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-focus: #ffffff;
   
-  --text-primary: #f0f3fa;
-  --text-secondary: #949db2;
-  --text-muted: #656d82;
+  --text-primary: #ffffff;
+  --text-secondary: #dbdee1;
+  --text-muted: #949ba4;
 
-  --accent-primary: #4e6ef2;
-  --accent-hover: #3d5cdb;
-  --accent-gradient: linear-gradient(135deg, #4e6ef2 0%, #7b52f5 100%);
+  --accent-primary: #ffffff;
+  --accent-hover: #e3e5e8;
+  --accent-text: #111214;
   
-  --success-color: #4ade80;
-  --error-color: #f87171;
+  --btn-dark-bg: #2b2d31;
+  --btn-dark-hover: #383a40;
+  
+  --success-color: #ffffff;
+  --error-color: #fca5a5;
 
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -32,12 +37,32 @@
 }
 
 body {
-  background-color: var(--bg-primary);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--font-family);
   font-size: 14px;
   line-height: 1.6;
   padding: 40px 20px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .options-container {
@@ -64,24 +89,26 @@ body {
 }
 
 .logo-badge {
-  background: var(--accent-gradient);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 13px;
+  background: #ffffff;
+  color: #111214;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.5px;
   padding: 4px 8px;
   border-radius: var(--radius-sm);
-  box-shadow: 0 2px 8px rgba(78, 110, 242, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .header h1 {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .version-tag {
   font-size: 12px;
   color: var(--text-muted);
-  background-color: var(--bg-secondary);
+  background-color: rgba(255, 255, 255, 0.06);
   padding: 4px 8px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
@@ -95,19 +122,21 @@ body {
 }
 
 .settings-card {
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
 }
 
 .card-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #ffffff;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 10px;
 }
@@ -128,22 +157,23 @@ body {
 .form-label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 .form-input, .form-select {
-  background-color: var(--bg-primary);
+  background-color: rgba(0, 0, 0, 0.45);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
-  color: var(--text-primary);
+  color: #ffffff;
   font-size: 13px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .form-input:focus, .form-select:focus {
-  border-color: var(--border-focus);
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
 }
 
 .form-help {
@@ -167,12 +197,17 @@ body {
   cursor: pointer;
   width: 16px;
   height: 16px;
-  accent-color: var(--accent-primary);
+  accent-color: #ffffff;
 }
 
 .checkbox-text {
   font-size: 13px;
   color: var(--text-secondary);
+  transition: color 0.15s ease;
+}
+
+.checkbox-label:hover .checkbox-text {
+  color: #ffffff;
 }
 
 /* Connection Test */
@@ -183,20 +218,20 @@ body {
 }
 
 .secondary-button {
-  background-color: var(--bg-card);
+  background-color: var(--btn-dark-bg);
   border: 1px solid var(--border-color);
-  color: var(--text-primary);
+  color: #ffffff;
   padding: 8px 16px;
   border-radius: var(--radius-sm);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .secondary-button:hover {
-  background-color: var(--bg-card-hover);
-  border-color: var(--border-focus);
+  background-color: var(--btn-dark-hover);
+  border-color: rgba(255, 255, 255, 0.24);
 }
 
 .conn-result {
@@ -205,7 +240,7 @@ body {
 }
 
 .conn-result.success {
-  color: var(--success-color);
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -223,20 +258,21 @@ body {
 }
 
 .primary-button {
-  background: var(--accent-gradient);
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #111214;
   border: none;
   border-radius: var(--radius-md);
   padding: 12px 24px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
-  box-shadow: 0 4px 12px rgba(78, 110, 242, 0.35);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 .primary-button:hover {
-  opacity: 0.95;
+  background-color: #e3e5e8;
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.15);
 }
 
 .primary-button:active {
@@ -245,6 +281,6 @@ body {
 
 .save-status {
   font-size: 13px;
-  color: var(--success-color);
+  color: #ffffff;
   font-weight: 500;
 }
