@@ -156,10 +156,25 @@ async function getNetscapeCookies(targetUrl) {
   }
 }
 
+function sanitizeUrl(rawUrl) {
+  if (!rawUrl) return "";
+  let u = rawUrl.trim();
+  const m = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+  if (m && u.includes("list=")) {
+    const videoId = m[1];
+    if (u.includes("music.youtube.com")) {
+      return `https://music.youtube.com/watch?v=${videoId}`;
+    }
+    return `https://www.youtube.com/watch?v=${videoId}`;
+  }
+  return u;
+}
+
 // Handle Context Menu Clicks
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  const targetUrl = info.linkUrl || info.pageUrl || (tab && tab.url);
+  let targetUrl = info.linkUrl || info.pageUrl || (tab && tab.url);
   if (!targetUrl) return;
+  targetUrl = sanitizeUrl(targetUrl);
 
   let downloadType = "video";
   let videoQuality = "best";
@@ -241,6 +256,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   (async () => {
     try {
       if (message.action === "download") {
+        if (message.url) {
+          message.url = sanitizeUrl(message.url);
+        }
         if (!message.cookies_data && (!message.cookies_from_browser || message.cookies_from_browser === "auto")) {
           const cookieText = await getNetscapeCookies(message.url);
           if (cookieText) {

@@ -24,6 +24,11 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Rust build artifacts
+target/
+Cargo.lock
+native_host/*.exe
+
 # AI Assistant documentation
 [Gg][Ee][Mm][Ii][Nn][Ii].[Mm][Dd]
 [Cc][Ll][Aa][Uu][Dd][Ee].[Mm][Dd]

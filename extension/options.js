@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const defaultTypeSelect = document.getElementById("defaultType");
   const defaultVideoQualitySelect = document.getElementById("defaultVideoQuality");
   const defaultAudioFormatSelect = document.getElementById("defaultAudioFormat");
+  const defaultNormalizeAudioCheckbox = document.getElementById("defaultNormalizeAudio");
   const downloadDirInput = document.getElementById("downloadDir");
   const embedThumbnailCheckbox = document.getElementById("embedThumbnail");
   const embedMetadataCheckbox = document.getElementById("embedMetadata");
@@ -23,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "savedType",
     "savedVideoQuality",
     "savedAudioFormat",
+    "savedNormalizeAudio",
     "savedDownloadDir",
     "savedEmbedThumbnail",
     "savedEmbedMetadata",
@@ -37,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (items.savedType) defaultTypeSelect.value = items.savedType;
     if (items.savedVideoQuality) defaultVideoQualitySelect.value = items.savedVideoQuality;
     if (items.savedAudioFormat) defaultAudioFormatSelect.value = items.savedAudioFormat;
+    if (items.savedNormalizeAudio !== undefined) defaultNormalizeAudioCheckbox.checked = items.savedNormalizeAudio;
     if (items.savedDownloadDir !== undefined) downloadDirInput.value = items.savedDownloadDir;
     if (items.savedEmbedThumbnail !== undefined) embedThumbnailCheckbox.checked = items.savedEmbedThumbnail;
     if (items.savedEmbedMetadata !== undefined) embedMetadataCheckbox.checked = items.savedEmbedMetadata;
@@ -72,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
       savedType: defaultTypeSelect.value,
       savedVideoQuality: defaultVideoQualitySelect.value,
       savedAudioFormat: defaultAudioFormatSelect.value,
+      savedNormalizeAudio: defaultNormalizeAudioCheckbox.checked,
       savedDownloadDir: downloadDirInput.value.trim(),
       savedEmbedThumbnail: embedThumbnailCheckbox.checked,
       savedEmbedMetadata: embedMetadataCheckbox.checked,
@@ -89,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
         action: "update_config",
         config: {
           download_dir: configData.savedDownloadDir,
+          normalize_audio: configData.savedNormalizeAudio,
           embed_thumbnail: configData.savedEmbedThumbnail,
           embed_metadata: configData.savedEmbedMetadata,
           embed_subtitles: configData.savedEmbedSubtitles,

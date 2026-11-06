@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Form Controls
   const videoQualitySelect = document.getElementById("videoQuality");
   const videoFormatSelect = document.getElementById("videoFormat");
+  const videoNormalizeAudioCheckbox = document.getElementById("videoNormalizeAudio");
   const videoThumbnailCheckbox = document.getElementById("videoThumbnail");
   const videoSubtitlesCheckbox = document.getElementById("videoSubtitles");
   const whisperSubtitlesCheckbox = document.getElementById("whisperSubtitles");
@@ -29,6 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const whisperBurnModeSelect = document.getElementById("whisperBurnMode");
 
   const audioFormatSelect = document.getElementById("audioFormat");
+  const audioNormalizeAudioCheckbox = document.getElementById("audioNormalizeAudio");
   const audioThumbnailCheckbox = document.getElementById("audioThumbnail");
   const audioWhisperCheckbox = document.getElementById("audioWhisper");
 
@@ -111,6 +113,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     "savedVideoFormat",
     "savedAudioFormat",
     "savedCustomArgs",
+    "savedVideoNormalizeAudio",
+    "savedAudioNormalizeAudio",
     "savedVideoThumbnail",
     "savedVideoSubtitles",
     "savedWhisperSubtitles",
@@ -129,6 +133,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (items.savedVideoFormat) videoFormatSelect.value = items.savedVideoFormat;
     if (items.savedAudioFormat) audioFormatSelect.value = items.savedAudioFormat;
     if (items.savedCustomArgs && customArgsInput) customArgsInput.value = items.savedCustomArgs;
+    if (items.savedVideoNormalizeAudio !== undefined) videoNormalizeAudioCheckbox.checked = items.savedVideoNormalizeAudio;
+    if (items.savedAudioNormalizeAudio !== undefined) audioNormalizeAudioCheckbox.checked = items.savedAudioNormalizeAudio;
     if (items.savedVideoThumbnail !== undefined) videoThumbnailCheckbox.checked = items.savedVideoThumbnail;
     if (items.savedVideoSubtitles !== undefined) videoSubtitlesCheckbox.checked = items.savedVideoSubtitles;
     if (items.savedWhisperSubtitles !== undefined) {
@@ -140,13 +146,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (items.savedAudioWhisper !== undefined) audioWhisperCheckbox.checked = items.savedAudioWhisper;
   });
 
+  // Helper to sanitize YouTube playlist/mix URLs
+  function sanitizeUrl(rawUrl) {
+    if (!rawUrl) return "";
+    let u = rawUrl.trim();
+    const m = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+    if (m && u.includes("list=")) {
+      const videoId = m[1];
+      if (u.includes("music.youtube.com")) {
+        return `https://music.youtube.com/watch?v=${videoId}`;
+      }
+      return `https://www.youtube.com/watch?v=${videoId}`;
+    }
+    return u;
+  }
+
   // Fetch active tab
   try {
     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (activeTab) {
       currentTabTitle = activeTab.title || "";
       pageTitleEl.textContent = activeTab.title || "タイトルなし";
-      pageUrlInput.value = activeTab.url || "";
+      pageUrlInput.value = sanitizeUrl(activeTab.url || "");
     }
   } catch (e) {
     pageTitleEl.textContent = "ページ情報を取得できませんでした";
@@ -163,7 +184,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Unified Download Handler
   async function triggerDownload(forceWhisper = null) {
-    const url = pageUrlInput.value.trim();
+    const url = sanitizeUrl(pageUrlInput.value.trim());
     if (!url) {
       showStatus("有効な URL を入力してください。", "error");
       return;
@@ -176,6 +197,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const customArgs = customArgsInput.value.trim();
 
     const embedThumbnail = selectedType === "video" ? videoThumbnailCheckbox.checked : audioThumbnailCheckbox.checked;
+    const normalizeAudio = selectedType === "video" ? videoNormalizeAudioCheckbox.checked : audioNormalizeAudioCheckbox.checked;
 
     // Resolve Whisper flag
     let isWhisper = false;
@@ -195,6 +217,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       savedVideoFormat: videoFormat,
       savedAudioFormat: audioFormat,
       savedCustomArgs: customArgs,
+      savedVideoNormalizeAudio: videoNormalizeAudioCheckbox.checked,
+      savedAudioNormalizeAudio: audioNormalizeAudioCheckbox.checked,
       savedVideoThumbnail: videoThumbnailCheckbox.checked,
       savedVideoSubtitles: videoSubtitlesCheckbox.checked,
       savedWhisperSubtitles: whisperSubtitlesCheckbox.checked,
@@ -215,6 +239,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         video_quality: videoQuality,
         video_format: videoFormat,
         audio_format: audioFormat,
+        normalize_audio: normalizeAudio,
         embed_thumbnail: embedThumbnail,
         embed_metadata: true,
         embed_subtitles: embedSubtitles,

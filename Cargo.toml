@@ -1,0 +1,25 @@
+[package]
+name = "yt-dlp-extension"
+version = "0.2.0"
+edition = "2021"
+authors = ["LunaFleuret <LunaFleuret@users.noreply.github.com>"]
+description = "High-performance yt-dlp native messaging host & background downloader with EBU R128 normalization and Whisper AMD Vulkan support"
+
+[dependencies]
+tokio = { version = "1.40", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+regex = "1.10"
+image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
+url = "2.5"
+anyhow = "1.0"
+uuid = { version = "1.10", features = ["v4"] }
+chrono = "0.4"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
